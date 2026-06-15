@@ -1,0 +1,27 @@
+mode: spot          # spot | futures
+symbol: BTC/USDT
+upper_price: 70000
+lower_price: 60000
+num_grids: 10
+spacing: arithmetic # arithmetic | geometric
+total_investment: 1000
+paper_trading: true
+
+futures:
+  leverage: 10
+  margin_mode: isolated
+
+risk:
+  stop_loss_pct: 5
+  max_open_orders: 20
+
+monitoring:
+  summary_interval: 30
+  log_file: logs/bot.log
+
+# Dashboard authentication
+auth:
+  enabled: true
+  username: admin
+  password: trader123
+  session_secret: traider-secret-key-change-in-production

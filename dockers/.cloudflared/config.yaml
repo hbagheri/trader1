@@ -1,0 +1,31 @@
+tunnel: wp-cloudflared-tunnel
+credentials-file: /home/user/.cloudflared/credentials.json
+
+ingress:
+  # Root domain - default to Traider Dashboard
+  - hostname: algotrader1.hbvsoft.ir
+    service: http://wp-traider-dashboard:5000
+
+  # Traider Dashboard (subdomain)
+  - hostname: traider.algotrader1.hbvsoft.ir
+    service: http://wp-traider-dashboard:5000
+
+  # Ayimi (WordPress)
+  - hostname: ayimi.algotrader1.hbvsoft.ir
+    service: http://wp-ayimi:80
+
+  # PhysicalMe (WordPress)
+  - hostname: physicalme.algotrader1.hbvsoft.ir
+    service: http://wp-physicalme:80
+
+  # LearnArm API
+  - hostname: api.algotrader1.hbvsoft.ir
+    path: /learnarm/*
+    service: http://wp-learnarm-api:8000
+
+  # PhpMyAdmin
+  - hostname: db.algotrader1.hbvsoft.ir
+    service: http://wp-phpmyadmin:80
+
+  # Default fallback
+  - service: http_status:404
