@@ -25,6 +25,8 @@ class DashboardApp:
         self.data_loader = None
         self.config = {}
         self.auth_config = {}
+        self.event_loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.event_loop)
 
         # Load config
         if config_path is None:
@@ -111,34 +113,65 @@ class DashboardApp:
                 strategy_name = data.get('strategy', 'SMA')
                 use_mock_data = data.get('mock_data', True)
 
-                # Placeholder: Return mock chart
                 from backtest.data import DataLoader
                 from bot.strategies.sma import SMAStrategy
+                from bot.strategies.rsi import RSIStrategy
+                from bot.strategies.combo import ComboStrategy
 
                 ohlcv = DataLoader().generate_mock_data(symbol, num_candles=100)
 
-                strategy = SMAStrategy()
+                # Dynamically load the correct strategy
+                if strategy_name == 'SMA':
+                    strategy = SMAStrategy()
+                elif strategy_name == 'RSI':
+                    strategy = RSIStrategy()
+                elif strategy_name == 'COMBO':
+                    sma = SMAStrategy()
+                    rsi = RSIStrategy()
+                    strategy = ComboStrategy([sma, rsi], name='Combo (SMA + RSI)')
+                elif strategy_name == 'GRID':
+                    strategy = SMAStrategy()  # Fallback to SMA for now
+                else:
+                    strategy = SMAStrategy()
+
                 backtester = Backtester(strategy)
 
-                # Run backtest in thread
-                loop = asyncio.new_event_loop()
-                result = loop.run_until_complete(backtester.run(ohlcv))
+                # Run backtest using instance event loop
+                result = self.event_loop.run_until_complete(backtester.run(ohlcv))
+                indicator_data = self.event_loop.run_until_complete(strategy.get_indicator_data())
 
                 # Create chart
                 fig = create_candlestick_chart(
                     ohlcv,
-                    sma_data=loop.run_until_complete(strategy.get_indicator_data()),
+                    sma_data=indicator_data,
                     signal_data=result.signal_history,
                     title=f"{symbol} - {strategy_name}"
                 )
 
-                # Get chart HTML and remove the <html><body> wrapper
-                chart_html = fig.to_html(include_plotlyjs=False, div_id='chart')
-                # Extract just the div and script content
-                import re
-                match = re.search(r'<body>(.*)</body>', chart_html, re.DOTALL)
-                if match:
-                    chart_html = match.group(1).strip()
+                # Convert Plotly figure to dict format for direct JSON serialization
+                # This avoids HTML parsing issues altogether
+                plot_data = json.loads(fig.to_json())
+
+                # Get the layout and data for JavaScript initialization
+                chart_json = json.dumps({
+                    'data': plot_data.get('data', []),
+                    'layout': plot_data.get('layout', {}),
+                    'config': {'responsive': True}
+                })
+
+                # Create chart HTML that will be initialized by JavaScript
+                # Disable Plotly's editor mode to avoid "_guiEditing" error
+                chart_html = f"""
+                <div id="chart" style="width:100%;height:800px;"></div>
+                <script>
+                    if (window.Plotly) {{
+                        var chartData = {chart_json};
+                        chartData.config.edits = {{}};
+                        chartData.config.staticPlot = false;
+                        Plotly.newPlot('chart', chartData.data, chartData.layout, chartData.config);
+                    }}
+                </script>
+                """
 
                 return jsonify({
                     'chart': chart_html,

@@ -17,8 +17,8 @@ def create_candlestick_chart(
 
     Args:
         ohlcv_data: List of OHLCV candles
-        sma_data: SMA indicator data (fast/slow lines)
-        rsi_data: RSI indicator data
+        sma_data: Indicator data (works for any strategy type)
+        rsi_data: Deprecated, use sma_data instead
         signal_data: Buy/Sell signals
         title: Chart title
 
@@ -26,11 +26,14 @@ def create_candlestick_chart(
         Plotly Figure object
     """
 
+    # Use sma_data for all indicator types (generic parameter)
+    indicator_data = sma_data or rsi_data
+
     fig = make_subplots(
         rows=2, cols=1,
         row_heights=[0.7, 0.3],
         specs=[[{"secondary_y": False}], [{"secondary_y": False}]],
-        subplot_titles=(title, "RSI")
+        subplot_titles=(title, "Indicators")
     )
 
     # Candlestick
@@ -53,8 +56,8 @@ def create_candlestick_chart(
     )
 
     # SMA lines
-    if sma_data and 'smas' in sma_data:
-        smas = sma_data['smas']
+    if indicator_data and 'smas' in indicator_data:
+        smas = indicator_data['smas']
         if smas:
             fast_smas = [s['fast'] for s in smas if s['fast']]
             slow_smas = [s['slow'] for s in smas if s['slow']]
@@ -65,7 +68,7 @@ def create_candlestick_chart(
                     go.Scatter(
                         x=sma_timestamps,
                         y=fast_smas,
-                        name=f"SMA({sma_data['config'].get('fast_period', 50)})",
+                        name=f"SMA({indicator_data['config'].get('fast_period', 50)})",
                         line=dict(color='orange', width=2),
                     ),
                     row=1, col=1
@@ -76,15 +79,15 @@ def create_candlestick_chart(
                     go.Scatter(
                         x=sma_timestamps,
                         y=slow_smas,
-                        name=f"SMA({sma_data['config'].get('slow_period', 200)})",
+                        name=f"SMA({indicator_data['config'].get('slow_period', 200)})",
                         line=dict(color='blue', width=2),
                     ),
                     row=1, col=1
                 )
 
     # RSI indicator
-    if rsi_data and 'rsis' in rsi_data:
-        rsis = rsi_data['rsis']
+    if indicator_data and 'rsis' in indicator_data:
+        rsis = indicator_data['rsis']
         if rsis:
             rsi_values = [r['rsi'] for r in rsis if r['rsi']]
             rsi_timestamps = [r['timestamp'] for r in rsis if r['rsi']]

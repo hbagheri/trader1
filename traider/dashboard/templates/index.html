@@ -304,11 +304,6 @@
                             <div class="metric-value">${metrics.trades}</div>
                         </div>
                     `;
-
-                    // Refresh Plotly
-                    if (window.Plotly) {
-                        Plotly.relayout('chart', {});
-                    }
                 }
             })
             .catch(error => {
