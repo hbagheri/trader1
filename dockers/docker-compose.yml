@@ -1,4 +1,4 @@
-name: wp
+name: ld-host
 
 services:
   db:
@@ -52,8 +52,8 @@ services:
   learnarm-api:
     build:
       context: ../fastapi/learnArm
-      dockerfile: ../../dockers/fastapi/learnArm/Dockerfile
-    container_name: wp-learnarm-api
+      dockerfile: Dockerfile
+    container_name: ld-host-learnarm-api
     restart: unless-stopped
     networks:
       - wpnet
@@ -61,66 +61,77 @@ services:
       - ../fastapi/learnArm/audio_cache:/app/audio_cache
     ports:
       - "127.0.0.1:50082:8000"
+    profiles:
+      - donotstart
 
-  traider-postgres:
+  postgres:
     image: postgres:16
-    container_name: wp-traider-postgres
+    container_name: ld-host-postgres
     restart: unless-stopped
     networks:
       - wpnet
+      - traider-net
     environment:
       POSTGRES_DB: traider
       POSTGRES_USER: traider
       POSTGRES_PASSWORD: ${TRAIDER_DB_PASSWORD:-traider_password}
+      POSTGRES_INITDB_ARGS: "-c listen_addresses='*'"
     volumes:
-      - traider_postgres_data:/var/lib/postgresql/data
-    ports:
-      - "127.0.0.1:5432:5432"
+      - postgres_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U traider -d traider"]
+      test: [ "CMD-SHELL", "pg_isready -U traider -d traider" ]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
+      start_period: 20s
 
-  traider-redis:
+  redis:
     image: redis:7-alpine
-    container_name: wp-traider-redis
+    container_name: ld-host-redis
     restart: unless-stopped
     networks:
       - wpnet
-    command: redis-server --appendonly yes --requirepass ${TRAIDER_REDIS_PASSWORD:-redis_password}
+      - traider-net
+    command: redis-server --appendonly yes --requirepass ${TRAIDER_REDIS_PASSWORD:-redis_password} --bind 0.0.0.0
     volumes:
-      - traider_redis_data:/data
-    ports:
-      - "127.0.0.1:6379:6379"
+      - redis_data:/data
+    expose:
+      - "6379"
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: [ "CMD", "redis-cli", "-a", "${TRAIDER_REDIS_PASSWORD:-redis_password}", "ping" ]
       interval: 10s
       timeout: 3s
-      retries: 5
+      retries: 10
 
-  traider-dashboard:
+  dashboard:
     build:
       context: ../traider
       dockerfile: Dockerfile
-    container_name: wp-traider-dashboard
+    container_name: ld-host-dashboard
     restart: unless-stopped
     depends_on:
-      - traider-postgres
-      - traider-redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - wpnet
+      - traider-net
     environment:
       FLASK_ENV: production
       PYTHONUNBUFFERED: 1
-      DATABASE_URL: postgresql://traider:${TRAIDER_DB_PASSWORD:-traider_password}@wp-traider-postgres:5432/traider
-      REDIS_URL: redis://:${TRAIDER_REDIS_PASSWORD:-redis_password}@wp-traider-redis:6379/0
+      DATABASE_URL: postgresql://traider:${TRAIDER_DB_PASSWORD:-traider_password}@postgres:5432/traider
+      REDIS_URL: redis://:${TRAIDER_REDIS_PASSWORD:-redis_password}@redis:6379/0
     volumes:
       - ../traider/logs:/app/logs
       - ../traider/config.yaml:/app/config.yaml
     ports:
       - "127.0.0.1:50083:5000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   cloudflared:
     image: cloudflare/cloudflared:latest
@@ -129,8 +140,7 @@ services:
     depends_on:
       - ayimi
       - physicalme
-      - learnarm-api
-      - traider-dashboard
+      - dashboard
     networks:
       - wpnet
     command: tunnel --config /etc/cloudflared/config.yaml run
@@ -161,8 +171,13 @@ networks:
     ipam:
       config:
         - subnet: 10.89.7.0/24
+  traider-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.89.8.0/24
 
 volumes:
   db_data:
-  traider_postgres_data:
-  traider_redis_data:
+  postgres_data:
+  redis_data:

@@ -76,7 +76,7 @@ def main():
         logger.info("Starting Flask dashboard...")
         dashboard = DashboardApp(debug=False)
         logger.info("✅ Dashboard started successfully")
-        dashboard.run(host='0.0.0.0', port=5000)
+        dashboard.run(host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
     except Exception as e:
         logger.error(f"❌ Dashboard failed: {e}")
         sys.exit(1)

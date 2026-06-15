@@ -8,7 +8,7 @@ import os
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://traider:traider_password@wp-traider-postgres:5432/traider')
 
 try:
-    engine = create_engine(DATABASE_URL, echo=False, connect_args={"timeout": 5})
+    engine = create_engine(DATABASE_URL, echo=False, connect_args={"connect_timeout": 5})
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 except Exception as e:
     print(f"Warning: Could not create database engine: {e}")

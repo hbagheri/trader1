@@ -61,7 +61,7 @@ class PriceCollector:
             candles = []
             for candle in ohlcv:
                 candles.append({
-                    'timestamp': int(candle[0]),
+                    'timestamp': int(candle[0] // 1000),
                     'open': float(candle[1]),
                     'high': float(candle[2]),
                     'low': float(candle[3]),

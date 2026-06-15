@@ -341,7 +341,7 @@ class DashboardApp:
             logger.error(f"Error loading candles from DB: {e}")
             return None
 
-    def run(self, host: str = '0.0.0.0', port: int = 5000):
+    def run(self, host: str = '0.0.0.0', port: int = 5000, **kwargs):
         """Start the dashboard server with WebSocket support."""
         logger.info(f"Starting dashboard on {host}:{port}")
-        self.socketio.run(self.flask_app, host=host, port=port, debug=self.debug)
+        self.socketio.run(self.flask_app, host=host, port=port, debug=self.debug, **kwargs)
