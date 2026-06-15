@@ -132,6 +132,10 @@ if ($configExtra = getenv_docker('WORDPRESS_CONFIG_EXTRA', '')) {
 
 define('FS_METHOD', 'direct');
 
+// Local development environment
+define('WP_HOME', 'http://127.0.0.1:50081');
+define('WP_SITEURL', 'http://127.0.0.1:50081');
+
 /* That's all, stop editing! Happy publishing. */
 
 /** Absolute path to the WordPress directory. */
