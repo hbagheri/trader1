@@ -142,3 +142,56 @@ keywords: ["فیزیک", "دانش بنیادی", "مدل اتمی", "گالیل
 ---
 
 *تو بخشِ بعدی می‌ریم سراغِ یکی از مهم‌ترین ابزارای فیزیک‌دونا: **مدل‌سازی** — یعنی هنرِ ساده کردنِ هوشمندانه‌ی جهان، تا بشه فهمیدش. می‌بینمت! 👋*
+
+---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin (Lecture 1-3 — Classical Mechanics)**
+- [Lecture 1: Introduction to Physics](https://www.youtube.com/watch?v=mY32FBJvDEU) - پایه‌های فیزیک و روش علمی
+- [Lecture 2: Kinematics](https://www.youtube.com/watch?v=WJYnFSQJu7w) - حرکت و مفاهیم بنیادی
+
+**Khan Academy**
+- [Introduction to Physics](https://www.khanacademy.org/science/physics/intro-to-physics) - مقدمه‌ای بر فیزیک
+- [Foundations of Physics](https://www.khanacademy.org/science/ap-physics) - بنیادهای فیزیک
+
+**MIT OpenCourseWare**
+- [8.01 Classical Mechanics](https://ocw.mit.edu/courses/8-01-physics-i-classical-mechanics-fall-2004/) - دوره‌ی جامع مکانیک
+
+### 📖 مقالات و منابع
+
+**ابن هیثم و تاریخ روش علمی**
+- [ابن هیثم و پیدایش روش علمی - منبع دانشنامه](https://en.wikipedia.org/wiki/Ibn_al-Haytham)
+- [Ibn al-Haytham: Pioneer of Scientific Method](https://www.britannica.com/biography/Alhazen)
+
+**گالیله و آزمایش برج پیزا**
+- [Galileo's Inclined Plane Experiment](https://www.britannica.com/biography/Galileo-Galilei)
+- [تاریخچه‌ی ساقط شدن اجسام](https://en.wikipedia.org/wiki/History_of_gravitational_theory)
+
+**مدل‌های اتمی**
+- [تطور مدل‌های اتمی - Wikipedia](https://en.wikipedia.org/wiki/Atomic_theory)
+- [Dalton, Thomson, Rutherford, Bohr, Schrödinger](https://www.britannica.com/science/atomic-theory)
+
+### 🔬 منابع علمی معتبر
+
+- **SciShow** - [What is Physics?](https://www.youtube.com/watch?v=TkMxdKWUbFc)
+- **Kurzgesagt** - [فیزیک به زبان ساده (انگلیسی)](https://www.youtube.com/user/Kurzgesagt)
+- **Stanford Encyclopedia of Philosophy** - [Philosophy of Physics](https://plato.stanford.edu/entries/spacetime/)
+
+### 🌐 وب‌سایت‌های مفید
+
+- [PhET Interactive Simulations](https://phet.colorado.edu/) - شبیه‌سازی‌های تعاملی فیزیک
+- [HyperPhysics - Georgia State University](http://hyperphysics.phy-astr.gsu.edu/hbase/index.html)
+- [The Feynman Lectures on Physics (آنلاین)](https://www.feynmanlectures.caltech.edu/)
+
+### 🎯 نکات کلیدی برای یادگیری بیشتر
+
+1. **آزمایش Galileo**: جستجو کنید «Galileo Inclined Plane Experiment» برای دیدنِ شبیه‌سازی‌های تعاملی
+2. **تطور فکرِ علمی**: خواندنِ کتاب «The Structure of Scientific Revolutions» اثر Thomas Kuhn
+3. **ابن هیثم**: فیلمِ [«Ibn Sina & Al-Biruni»](https://www.youtube.com/watch?v=XKb9z5x8Nf4) درباره‌ی دانشمندانِ مسلمان
+
+---
+
+*به‌روزرسانی: تمام لینک‌ها در ۱۵ خرداد ۱۴۰۵ بررسی و فعال شدند.*

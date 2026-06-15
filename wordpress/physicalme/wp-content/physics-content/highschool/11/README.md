@@ -27,4 +27,34 @@
 عکس‌ها در پوشه‌ی `images/` قرار دارند و در مقاله‌ها با `<img src="/images/NAME.jpg">` صدا زده شده‌اند.
 **CLI باید پوشه‌ی `images/` را استاتیک سرو کند و مسیرِ پایه‌ی `/images/` را — دقیقاً مثلِ `/widgets/` — بازنویسی کند.**
 اگر مسیر/پیشوندِ دیگری لازم است، فقط `src="/images/..."`ها را در مقاله‌ها جایگزین کنید.
-نام فایل‌ها: 01-1-kahroba، 02-2-resistors، 02-2-multimeter، 02-2-ohm-portrait، 02-3-power-lines، 02-3-nichrome، 02-3-superconductor، 02-4-car-battery، 02-4-electric-fish، 02-5-meter، 02-5-led-vs-bulb، 02-6-string-lights (همه .jpg).
+نام فایل‌ها: 01-1-kahroba، 02-2-resistors، 02-2-multimeter، 02-2-ohm-portrait، 02-3-power-lines، 02-3-nichrome، 02-3-superconductor، 02-4-car-battery، 02-4-electric-fish، 02-5-meter، 02-5-led-vs-bulb، 02-6-string-lights (همه .jpg).---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*

@@ -234,4 +234,34 @@ print(f"U-235:  {binding_energy(92, 235, 235.043930):.2f} MeV")
 
 ---
 
-*تو بخشِ بعدی می‌ریم سراغِ **پرتوزایی و نیمه‌عمر** — یاد می‌گیریم چطور هسته‌های ناپایدار خودبه‌خود تجزیه می‌شن و این فرآیند چطور به ما اجازه می‌ده سنِ آثارِ باستان‌شناسی رو حساب کنیم. می‌بینمت! 👋*
+*تو بخشِ بعدی می‌ریم سراغِ **پرتوزایی و نیمه‌عمر** — یاد می‌گیریم چطور هسته‌های ناپایدار خودبه‌خود تجزیه می‌شن و این فرآیند چطور به ما اجازه می‌ده سنِ آثارِ باستان‌شناسی رو حساب کنیم. می‌بینمت! 👋*---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*

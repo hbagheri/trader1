@@ -45,4 +45,34 @@ keywords: ["حل مسائل", "تمرین", "فصل ۳", "مغناطیس", "یا
 
 برای مرورِ سریع‌تر، سراغ <a href="/articles/flashcards-y11-fasl-3/">کارت‌های حافظه‌ی فصل</a> برو — ۳۰ کارت با گزینه‌های چندجوابه که در ۱۰-۱۵ دقیقه کلِ فصل رو مرور می‌کنه.
 
-تو فصل ۴ ـه که سراغ <b>القای الکترومغناطیسی</b> می‌ریم — کشفِ مایکل فارادی در ۱۸۳۱ که پایه‌ی تمامِ نیروگاه‌ها و موتورهای مدرنه. می‌بینمت! 👋
+تو فصل ۴ ـه که سراغ <b>القای الکترومغناطیسی</b> می‌ریم — کشفِ مایکل فارادی در ۱۸۳۱ که پایه‌ی تمامِ نیروگاه‌ها و موتورهای مدرنه. می‌بینمت! 👋---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*

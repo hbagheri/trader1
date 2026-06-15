@@ -113,4 +113,34 @@ print(f"توان مکانیکی: {P*1000:.1f} mW")
 
 ---
 
-*در بخش بعدی، می‌بینیم خودِ جریان هم می‌تونه میدانِ مغناطیسی **بسازه** — [میدان از جریان](https://physicsme.ir/articles/magnetic-field-from-current-tajrobi/) 🔄.*
+*در بخش بعدی، می‌بینیم خودِ جریان هم می‌تونه میدانِ مغناطیسی **بسازه** — [میدان از جریان](https://physicsme.ir/articles/magnetic-field-from-current-tajrobi/) 🔄.*---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*

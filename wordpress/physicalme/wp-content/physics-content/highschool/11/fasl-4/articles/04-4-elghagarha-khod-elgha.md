@@ -185,4 +185,34 @@ $$U = \frac{1}{2} L I^2 = \frac{1}{2} \times (8 \times 10^{-3}) \times (0.5)^2 =
 
 ---
 
-*تو بخشِ بعدی می‌ریم سراغِ **جریان متناوب** — همون چیزی که از پریزِ خونه می‌گیری! اساسِ کلِ نیروگاه‌های دنیا. می‌بینمت! 👋*
+*تو بخشِ بعدی می‌ریم سراغِ **جریان متناوب** — همون چیزی که از پریزِ خونه می‌گیری! اساسِ کلِ نیروگاه‌های دنیا. می‌بینمت! 👋*---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*

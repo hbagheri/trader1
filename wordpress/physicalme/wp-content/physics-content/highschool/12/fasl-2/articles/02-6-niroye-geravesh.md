@@ -230,4 +230,34 @@ $F = G\dfrac{m_1 m_2}{r^2} = 6.67\times 10^{-11} \times \dfrac{70\times 70}{1^2}
 - ✅ حرکت دایره‌ای و شتاب مرکزگرا رو محاسبه کنی
 - ✅ گرانش و مدارهای ماهواره‌ای رو درک کنی
 
-تو فصلِ بعدی، می‌ریم سراغ **نوسان و موج** — یکی از زیباترین موضوعاتِ فیزیک، که از تابِ بازی شروع می‌شه و به امواجِ گرانشیِ سیاهچاله می‌رسه. 🌊✨
+تو فصلِ بعدی، می‌ریم سراغ **نوسان و موج** — یکی از زیباترین موضوعاتِ فیزیک، که از تابِ بازی شروع می‌شه و به امواجِ گرانشیِ سیاهچاله می‌رسه. 🌊✨---
+
+## 📚 منابع و مراجع
+
+### 🎥 ویدیوهای آموزشی
+
+**Walter Lewin - دانشگاه MIT**
+- [Lecture Series](https://www.youtube.com/@lecturesbywalterlewin.they9259) - سخنرانی‌های برتر در فیزیک کلاسیک
+
+**Khan Academy**
+- [Physics Content](https://www.khanacademy.org/science/physics) - درسِ رایگان فیزیک
+
+**YouTube Channels:**
+- [Kurzgesagt](https://www.youtube.com/user/Kurzgesagt) - فیزیک به زبانِ ساده
+- [3Blue1Brown](https://www.youtube.com/c/3blue1brown) - درکِ شهودی
+- [SciShow](https://www.youtube.com/user/scishow) - علومِ جالب و فیزیک
+
+### 📖 منابع معتبر
+
+- **MIT OpenCourseWare** - دوره‌های آزاد MIT
+- **The Feynman Lectures on Physics** - [آنلاین](https://www.feynmanlectures.caltech.edu/)
+- **HyperPhysics** - [Georgia State University](http://hyperphysics.phy-astr.gsu.edu)
+
+### 🔬 شبیه‌سازی‌های تعاملی
+
+- **PhET Simulations** - [phet.colorado.edu](https://phet.colorado.edu/fa/)
+- **GeoGebra** - [Interactive Math & Physics](https://www.geogebra.org/)
+
+---
+
+*آخرین به‌روزرسانی: ۱۵ خرداد ۱۴۰۵*
