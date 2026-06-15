@@ -4,11 +4,11 @@ credentials-file: /home/user/.cloudflared/credentials.json
 ingress:
   # Root domain - default to Traider Dashboard
   - hostname: algotrader1.hbvsoft.ir
-    service: http://wp-traider-dashboard:5000
+    service: http://ld-host-dashboard:5000
 
   # Traider Dashboard (subdomain)
   - hostname: traider.algotrader1.hbvsoft.ir
-    service: http://wp-traider-dashboard:5000
+    service: http://ld-host-dashboard:5000
 
   # Ayimi (WordPress)
   - hostname: ayimi.algotrader1.hbvsoft.ir
