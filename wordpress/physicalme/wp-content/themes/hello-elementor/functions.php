@@ -162,6 +162,46 @@ if ( ! function_exists( 'hello_elementor_scripts_styles' ) ) {
 }
 add_action( 'wp_enqueue_scripts', 'hello_elementor_scripts_styles' );
 
+// Enqueue custom styles and scripts
+function hello_elementor_custom_assets() {
+	wp_enqueue_style(
+		'hello-elementor-typography',
+		HELLO_THEME_STYLE_URL . 'typography.css',
+		[],
+		HELLO_ELEMENTOR_VERSION
+	);
+
+	wp_enqueue_style(
+		'hello-elementor-article-layout',
+		HELLO_THEME_STYLE_URL . 'article-layout.css',
+		[],
+		HELLO_ELEMENTOR_VERSION
+	);
+
+	wp_enqueue_style(
+		'hello-elementor-books-carousel',
+		HELLO_THEME_STYLE_URL . 'books-carousel.css',
+		[],
+		HELLO_ELEMENTOR_VERSION
+	);
+
+	wp_enqueue_style(
+		'hello-elementor-app-banner',
+		HELLO_THEME_STYLE_URL . 'app-banner.css',
+		[],
+		HELLO_ELEMENTOR_VERSION
+	);
+
+	wp_enqueue_script(
+		'hello-elementor-books-carousel',
+		HELLO_THEME_SCRIPTS_URL . 'books-carousel.js',
+		[],
+		HELLO_ELEMENTOR_VERSION,
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'hello_elementor_custom_assets' );
+
 if ( ! function_exists( 'hello_elementor_register_elementor_locations' ) ) {
 	/**
 	 * Register Elementor Locations.
@@ -277,8 +317,9 @@ add_action( 'init', function() {
 	register_post_type( 'article', array(
 		'label'       => 'Articles',
 		'public'      => true,
+		'has_archive' => true,
 		'supports'    => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
-		'rewrite'     => array( 'slug' => 'article' ),
+		'rewrite'     => array( 'slug' => 'article', 'with_front' => false ),
 		'show_in_rest' => true,
 	) );
 
@@ -286,7 +327,18 @@ add_action( 'init', function() {
 		'label'       => 'Chapters',
 		'public'      => true,
 		'hierarchical' => true,
-		'rewrite'     => array( 'slug' => 'chapter' ),
+		'rewrite'     => array( 'slug' => 'chapter', 'with_front' => false ),
 		'show_in_rest' => true,
 	) );
 }, 0 );
+
+// Flush rewrite rules on theme activation
+add_action( 'after_setup_theme', function() {
+	if ( ! get_transient( 'article_rewrite_rules_flushed' ) ) {
+		flush_rewrite_rules( false );
+		set_transient( 'article_rewrite_rules_flushed', 1, 3600 );
+	}
+}, 999 );
+
+// Register custom Elementor widgets
+require HELLO_THEME_PATH . '/includes/register-widgets.php';
