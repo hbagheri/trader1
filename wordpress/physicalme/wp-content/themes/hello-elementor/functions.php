@@ -271,3 +271,22 @@ if ( ! function_exists( 'hello_elementor_body_open' ) ) {
 require HELLO_THEME_PATH . '/theme.php';
 
 HelloTheme\Theme::instance();
+
+// Register article post type and chapter taxonomy
+add_action( 'init', function() {
+	register_post_type( 'article', array(
+		'label'       => 'Articles',
+		'public'      => true,
+		'supports'    => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
+		'rewrite'     => array( 'slug' => 'article' ),
+		'show_in_rest' => true,
+	) );
+
+	register_taxonomy( 'chapter', 'article', array(
+		'label'       => 'Chapters',
+		'public'      => true,
+		'hierarchical' => true,
+		'rewrite'     => array( 'slug' => 'chapter' ),
+		'show_in_rest' => true,
+	) );
+}, 0 );

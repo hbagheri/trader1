@@ -8,6 +8,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+// For chapter archives, try to use Elementor template
+if ( defined( 'ELEMENTOR_VERSION' ) && is_tax( 'chapter' ) ) {
+	$chapter_template = get_posts( array(
+		'post_type' => 'elementor_library',
+		'name' => 'chapter-archive',
+		'numberposts' => 1,
+	) );
+
+	if ( ! empty( $chapter_template ) ) {
+		echo \Elementor\Plugin::instance()->frontend->get_builder_content( $chapter_template[0]->ID );
+		return;
+	}
+}
+
 ?>
 <main id="content" class="site-main">
 
