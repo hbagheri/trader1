@@ -133,7 +133,7 @@ class DashboardApp:
                 )
 
                 return jsonify({
-                    'chart': fig.to_html(include_plotlyjs='cdn'),
+                    'chart': fig.to_html(include_plotlyjs=False, div_id='chart'),
                     'metrics': {
                         'total_profit': result.total_profit,
                         'total_return': result.total_return,
