@@ -4,11 +4,13 @@ WORKDIR /app
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         ca-certificates \
+        postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
@@ -23,4 +25,4 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -fsS http://127.0.0.1:5000/ || exit 1
 
-CMD ["python", "run_dashboard.py"]
+CMD ["python", "init_and_run.py"]

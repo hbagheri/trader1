@@ -1,0 +1,1 @@
+- [Traider Grid Bot Project](project_traider.md) — v0.3: Grid trading bot + Docker + Cloudflare tunnel ready

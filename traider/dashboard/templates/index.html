@@ -191,8 +191,16 @@
 
         <div class="controls">
             <div>
+                <label for="exchange">Exchange</label>
+                <select id="exchange">
+                    <option value="binance">Binance</option>
+                    <option value="toobit">Toobit</option>
+                </select>
+            </div>
+
+            <div>
                 <label for="symbol">Symbol</label>
-                <input type="text" id="symbol" value="ETH/USDT" placeholder="e.g., BTC/USDT">
+                <input type="text" id="symbol" value="BTC/USDT" placeholder="e.g., BTC/USDT">
             </div>
 
             <div>
@@ -200,8 +208,8 @@
                 <select id="strategy">
                     <option value="SMA">SMA Crossover</option>
                     <option value="RSI">RSI</option>
-                    <option value="GRID">Grid Trading</option>
                     <option value="COMBO">Combo (SMA + RSI)</option>
+                    <option value="GRID">Grid Trading</option>
                 </select>
             </div>
 
@@ -211,12 +219,21 @@
             </div>
 
             <div>
-                <label for="mock_data">
-                    <input type="checkbox" id="mock_data" checked> Use Mock Data
+                <label for="data_source">
+                    <select id="data_source">
+                        <option value="mock">📊 Mock Data (Demo)</option>
+                        <option value="real">🔴 Real-time Data (DB)</option>
+                    </select>
                 </label>
             </div>
 
-            <button onclick="generateChart()">Generate Chart</button>
+            <button onclick="generateChart()">📈 Generate Chart</button>
+            <button onclick="subscribeToLivePrice()" style="background: linear-gradient(135deg, #00ff88, #00cc66);">🔴 Subscribe to Live Prices</button>
+        </div>
+
+        <div id="priceContainer" style="display:none; padding: 15px; background: #2a2a2a; border-radius: 8px; margin-bottom: 20px; border-left: 3px solid #00ff88;">
+            <strong style="color: #00ff88;">Live Price: <span id="livePrice">--</span></strong>
+            <span style="margin-left: 20px; color: #999;">Last Update: <span id="lastUpdate">--</span></span>
         </div>
 
         <div id="errorContainer"></div>
@@ -228,7 +245,56 @@
         <div class="metrics" id="metrics"></div>
     </div>
 
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
+        let socket = null;
+        let priceUpdateInterval = null;
+
+        // Initialize WebSocket connection
+        function initSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Connected to server');
+            });
+
+            socket.on('price_update', (data) => {
+                updatePriceDisplay(data);
+            });
+
+            socket.on('subscribed', (data) => {
+                console.log('Subscribed:', data);
+                document.getElementById('priceContainer').style.display = 'block';
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+            });
+        }
+
+        function updatePriceDisplay(priceData) {
+            const symbol = priceData.symbol;
+            const price = priceData.price;
+            const timestamp = new Date(priceData.timestamp * 1000).toLocaleTimeString();
+
+            document.getElementById('livePrice').innerHTML = `${symbol}: $${price.toFixed(2)}`;
+            document.getElementById('lastUpdate').textContent = timestamp;
+        }
+
+        async function subscribeToLivePrice() {
+            if (!socket) {
+                initSocket();
+            }
+
+            const exchange = document.getElementById('exchange').value;
+            const symbol = document.getElementById('symbol').value;
+
+            socket.emit('subscribe_price', {
+                exchange: exchange,
+                symbol: symbol
+            });
+        }
+
         async function logout() {
             try {
                 const response = await fetch('/api/logout', {
@@ -250,10 +316,12 @@
         }
 
         function generateChart() {
+            const exchange = document.getElementById('exchange').value;
             const symbol = document.getElementById('symbol').value;
             const strategy = document.getElementById('strategy').value;
             const candles = parseInt(document.getElementById('candles').value);
-            const mockData = document.getElementById('mock_data').checked;
+            const dataSource = document.getElementById('data_source').value;
+            const mockData = dataSource === 'mock';
 
             const chartDiv = document.getElementById('chart');
             const errorDiv = document.getElementById('errorContainer');
@@ -270,6 +338,7 @@
                 },
                 credentials: 'include',
                 body: JSON.stringify({
+                    exchange: exchange,
                     symbol: symbol,
                     strategy: strategy,
                     num_candles: candles,
@@ -286,7 +355,12 @@
 
                     // Display metrics
                     const metrics = data.metrics;
+                    const source = data.source === 'real' ? '🔴 Real Data' : '📊 Mock Data';
                     metricsDiv.innerHTML = `
+                        <div class="metric-card">
+                            <div class="metric-label">Data Source</div>
+                            <div class="metric-value">${source}</div>
+                        </div>
                         <div class="metric-card">
                             <div class="metric-label">Total Profit</div>
                             <div class="metric-value">$${metrics.total_profit.toFixed(2)}</div>
@@ -312,8 +386,9 @@
             });
         }
 
-        // Generate chart on page load
+        // Initialize on page load
         window.addEventListener('load', () => {
+            initSocket();
             // Uncomment to auto-generate on load
             // generateChart();
         });

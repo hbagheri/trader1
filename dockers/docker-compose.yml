@@ -62,17 +62,49 @@ services:
     ports:
       - "127.0.0.1:50082:8000"
 
+  traider-postgres:
+    image: postgres:16
+    container_name: wp-traider-postgres
+    restart: unless-stopped
+    networks:
+      - wpnet
+    environment:
+      POSTGRES_DB: traider
+      POSTGRES_USER: traider
+      POSTGRES_PASSWORD: ${TRAIDER_DB_PASSWORD:-traider_password}
+    volumes:
+      - traider_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  traider-redis:
+    image: redis:7-alpine
+    container_name: wp-traider-redis
+    restart: unless-stopped
+    networks:
+      - wpnet
+    command: redis-server --appendonly yes --requirepass ${TRAIDER_REDIS_PASSWORD:-redis_password}
+    volumes:
+      - traider_redis_data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+
   traider-dashboard:
     build:
       context: ../traider
       dockerfile: Dockerfile
     container_name: wp-traider-dashboard
     restart: unless-stopped
+    depends_on:
+      - traider-postgres
+      - traider-redis
     networks:
       - wpnet
     environment:
       FLASK_ENV: production
       PYTHONUNBUFFERED: 1
+      DATABASE_URL: postgresql://traider:${TRAIDER_DB_PASSWORD:-traider_password}@wp-traider-postgres:5432/traider
+      REDIS_URL: redis://:${TRAIDER_REDIS_PASSWORD:-redis_password}@wp-traider-redis:6379/0
     volumes:
       - ../traider/logs:/app/logs
       - ../traider/config.yaml:/app/config.yaml
@@ -121,3 +153,5 @@ networks:
 
 volumes:
   db_data:
+  traider_postgres_data:
+  traider_redis_data:
