@@ -132,8 +132,16 @@ class DashboardApp:
                     title=f"{symbol} - {strategy_name}"
                 )
 
+                # Get chart HTML and remove the <html><body> wrapper
+                chart_html = fig.to_html(include_plotlyjs=False, div_id='chart')
+                # Extract just the div and script content
+                import re
+                match = re.search(r'<body>(.*)</body>', chart_html, re.DOTALL)
+                if match:
+                    chart_html = match.group(1).strip()
+
                 return jsonify({
-                    'chart': fig.to_html(include_plotlyjs=False, div_id='chart'),
+                    'chart': chart_html,
                     'metrics': {
                         'total_profit': result.total_profit,
                         'total_return': result.total_return,
