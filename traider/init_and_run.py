@@ -43,14 +43,25 @@ def main():
     logger.info("  Trading Bot Dashboard - Initializing")
     logger.info("========================================")
 
-    # Initialize database
-    try:
-        logger.info("Initializing database...")
-        init_db()
-        logger.info("✅ Database initialized successfully")
-    except Exception as e:
-        logger.error(f"❌ Database initialization failed: {e}")
-        sys.exit(1)
+    # Initialize database with retries
+    max_retries = 30
+    retry_count = 0
+
+    while retry_count < max_retries:
+        try:
+            logger.info(f"Initializing database (attempt {retry_count + 1}/{max_retries})...")
+            init_db()
+            logger.info("✅ Database initialized successfully")
+            break
+        except Exception as e:
+            retry_count += 1
+            if retry_count >= max_retries:
+                logger.error(f"❌ Database initialization failed after {max_retries} attempts: {e}")
+                logger.warning("⚠️  Continuing without database (mock data only)")
+                break
+            logger.warning(f"⚠️  Database connection attempt {retry_count}/{max_retries} failed, retrying in 2 seconds...")
+            import time
+            time.sleep(2)
 
     # Start price collector in background thread
     try:
