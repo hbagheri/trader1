@@ -1,9 +1,9 @@
 CREATE DATABASE IF NOT EXISTS ayimi;
-CREATE DATABASE IF NOT EXISTS physicsalme;
+CREATE DATABASE IF NOT EXISTS physicalme;
 
 CREATE USER IF NOT EXISTS 'ayimi_user'@'%' IDENTIFIED BY 'sAtURN2#6)1';
 CREATE USER IF NOT EXISTS 'physics_user'@'%' IDENTIFIED BY 'sAtURN2#6)1';
 
 GRANT ALL PRIVILEGES ON ayimi.* TO 'ayimi_user'@'%';
-GRANT ALL PRIVILEGES ON physicsalme.* TO 'physics_user'@'%';
+GRANT ALL PRIVILEGES ON physicalme.* TO 'physics_user'@'%';
 FLUSH PRIVILEGES;
