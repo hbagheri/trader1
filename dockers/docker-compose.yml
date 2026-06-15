@@ -1,0 +1,123 @@
+name: wp
+
+services:
+  db:
+    image: mariadb:11
+    container_name: wp-db
+    restart: unless-stopped
+    networks:
+      - wpnet
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ../mariadb/init:/docker-entrypoint-initdb.d
+
+  ayimi:
+    image: wordpress:latest
+    container_name: wp-ayimi
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - wpnet
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${AYIMI_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${AYIMI_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${AYIMI_DB_NAME}
+    volumes:
+      - ../wordpress/ayimi:/var/www/html
+    ports:
+      - "127.0.0.1:50080:80"
+
+  physicalme:
+    image: wordpress:latest
+    container_name: wp-physicalme
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - wpnet
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: ${PHYSICALME_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${PHYSICALME_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${PHYSICALME_DB_NAME}
+    volumes:
+      - ../wordpress/physicalme:/var/www/html
+    ports:
+      - "127.0.0.1:50081:80"
+
+  learnarm-api:
+    build:
+      context: ../fastapi/learnArm
+      dockerfile: ../../dockers/fastapi/learnArm/Dockerfile
+    container_name: wp-learnarm-api
+    restart: unless-stopped
+    networks:
+      - wpnet
+    volumes:
+      - ../fastapi/learnArm/audio_cache:/app/audio_cache
+    ports:
+      - "127.0.0.1:50082:8000"
+
+  traider-dashboard:
+    build:
+      context: ../traider
+      dockerfile: Dockerfile
+    container_name: wp-traider-dashboard
+    restart: unless-stopped
+    networks:
+      - wpnet
+    environment:
+      FLASK_ENV: production
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ../traider/logs:/app/logs
+      - ../traider/config.yaml:/app/config.yaml
+    ports:
+      - "127.0.0.1:50083:5000"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: wp-cloudflared-tunnel
+    restart: unless-stopped
+    depends_on:
+      - ayimi
+      - physicalme
+      - learnarm-api
+      - traider-dashboard
+    networks:
+      - wpnet
+    command: tunnel --config /etc/cloudflared/config.yaml run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    volumes:
+      - ./.cloudflared/config.yaml:/etc/cloudflared/config.yaml
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: wp-phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - wpnet
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 256M
+      MEMORY_LIMIT: 512M
+    ports:
+      - "127.0.0.1:50090:80"
+
+networks:
+  wpnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.89.7.0/24
+
+volumes:
+  db_data:
