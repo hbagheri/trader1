@@ -3,9 +3,9 @@
  * Contact Form Handler with Database Storage & Google reCAPTCHA v3
  */
 
-// Google reCAPTCHA v2 Production Keys
-define('RECAPTCHA_SITE_KEY', '6Lc0XiotAAAAACi7cW-1tt27lFq7sLFM43fLIULe');
-define('RECAPTCHA_SECRET_KEY', '6Lc0XiotAAAAAJrUE5aCNY2ta0oE8DhBpKz7-tqn');
+// Google reCAPTCHA v2 Test Keys
+define('RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
+define('RECAPTCHA_SECRET_KEY', '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe');
 
 // Create table on plugin activation
 register_activation_hook(__FILE__, 'physicalme_create_contact_table');
