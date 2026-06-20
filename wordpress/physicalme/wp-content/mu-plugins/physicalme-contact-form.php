@@ -1,20 +1,124 @@
 <?php
 /**
- * Contact Form Handler
+ * Contact Form Handler with Database Storage & CAPTCHA
  */
+
+// Create table on plugin activation
+register_activation_hook(__FILE__, 'physicalme_create_contact_table');
+
+function physicalme_create_contact_table() {
+  global $wpdb;
+  $charset_collate = $wpdb->get_charset_collate();
+  $table_name = $wpdb->prefix . 'physicalme_contacts';
+
+  $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+    id mediumint(9) NOT NULL AUTO_INCREMENT,
+    email varchar(255) NOT NULL,
+    subject varchar(255) NOT NULL,
+    message longtext NOT NULL,
+    file_url varchar(500),
+    file_name varchar(255),
+    ip_address varchar(45),
+    status varchar(20) DEFAULT 'new',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY status (status),
+    KEY created_at (created_at)
+  ) $charset_collate;";
+
+  require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+  dbDelta($sql);
+}
+
+// Create table on plugin load
+physicalme_create_contact_table();
+
+// Add admin menu for contact submissions
+add_action('admin_menu', function() {
+  add_submenu_page(
+    'tools.php',
+    'پیام‌های تماس',
+    'پیام‌های تماس',
+    'manage_options',
+    'physicalme-contacts',
+    'physicalme_render_contact_list'
+  );
+});
+
+// Render contact list in admin
+function physicalme_render_contact_list() {
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'physicalme_contacts';
+
+  // Handle delete action
+  if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    check_admin_referer('delete_contact_' . $_GET['id']);
+    $wpdb->delete($table_name, ['id' => intval($_GET['id'])]);
+    echo '<div class="notice notice-success"><p>پیام حذف شد</p></div>';
+  }
+
+  // Get contacts
+  $contacts = $wpdb->get_results("SELECT * FROM $table_name ORDER BY created_at DESC LIMIT 100");
+
+  ?>
+  <div class="wrap">
+    <h1>پیام‌های تماس</h1>
+    <table class="wp-list-table widefat fixed striped">
+      <thead>
+        <tr>
+          <th>ایمیل</th>
+          <th>موضوع</th>
+          <th>تاریخ</th>
+          <th>فایل</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($contacts as $contact): ?>
+          <tr>
+            <td><?php echo esc_html($contact->email); ?></td>
+            <td>
+              <strong><?php echo esc_html($contact->subject); ?></strong>
+              <br><small><?php echo esc_html(substr($contact->message, 0, 100)); ?>...</small>
+            </td>
+            <td><?php echo date_i18n('Y-m-d H:i', strtotime($contact->created_at)); ?></td>
+            <td>
+              <?php if ($contact->file_url): ?>
+                <a href="<?php echo esc_url($contact->file_url); ?>" target="_blank">
+                  <?php echo esc_html($contact->file_name); ?>
+                </a>
+              <?php else: ?>
+                -
+              <?php endif; ?>
+            </td>
+            <td>
+              <a href="<?php echo wp_nonce_url('?page=physicalme-contacts&action=delete&id=' . $contact->id, 'delete_contact_' . $contact->id); ?>"
+                 onclick="return confirm('آیا می‌خواهید این پیام را حذف کنید؟')">حذف</a>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+  <style>
+    .wp-list-table { max-width: 100%; }
+    .wp-list-table th { text-align: right; }
+    .wp-list-table td { text-align: right; }
+  </style>
+  <?php
+}
 
 // Add contact form shortcode
 add_shortcode('physicalme_contact_form', function() {
   if (!is_admin()) {
+    wp_enqueue_script('hcaptcha-script', 'https://js.hcaptcha.com/1/api.js', [], null, true);
     wp_enqueue_script('physicalme-contact-form', get_template_directory_uri() . '/../../../mu-plugins/contact-form.js', [], time(), true);
     wp_localize_script('physicalme-contact-form', 'physicalmeContact', [
       'ajaxUrl' => admin_url('admin-ajax.php'),
       'nonce' => wp_create_nonce('physicalme_contact_nonce'),
-      'maxSize' => 20 * 1024 * 1024,
-      'maxSizeText' => '20 MB'
     ]);
   }
-  
+
   return physicalme_render_contact_form();
 });
 
@@ -24,12 +128,12 @@ add_action('wp_ajax_physicalme_contact_submit', 'physicalme_contact_submit');
 
 function physicalme_contact_submit() {
   check_ajax_referer('physicalme_contact_nonce', 'nonce');
-  
+
   $email = sanitize_email($_POST['email'] ?? '');
   $subject = sanitize_text_field($_POST['subject'] ?? '');
   $message = sanitize_textarea_field($_POST['message'] ?? '');
-  $captcha = sanitize_text_field($_POST['g-recaptcha-response'] ?? '');
-  
+  $captcha_token = sanitize_text_field($_POST['h-captcha-response'] ?? '');
+
   // Validation
   if (empty($email) || !is_email($email)) {
     wp_send_json_error('ایمیل نامعتبر است');
@@ -40,21 +144,63 @@ function physicalme_contact_submit() {
   if (empty($message) || strlen($message) < 10) {
     wp_send_json_error('متن پیام باید حداقل 10 حرف باشد');
   }
-  
+
+  // CAPTCHA Verification - REQUIRED!
+  if (empty($captcha_token)) {
+    wp_send_json_error('لطفا hCaptcha را تکمیل کنید');
+  }
+
+  // Verify hCaptcha token
+  $captcha_secret = '0x0000000000000000000000000000000000000000'; // Replace with real secret
+  $verify_response = wp_remote_post('https://hcaptcha.com/siteverify', [
+    'body' => [
+      'secret' => $captcha_secret,
+      'response' => $captcha_token,
+    ]
+  ]);
+
+  if (is_wp_error($verify_response)) {
+    wp_send_json_error('خطا در تحقق hCaptcha');
+  }
+
+  $body = json_decode(wp_remote_retrieve_body($verify_response));
+  if (!isset($body->success) || !$body->success) {
+    wp_send_json_error('تحقق hCaptcha ناموفق بود. لطفا دوباره سعی کنید');
+  }
+
   // Handle file upload
-  $attachments = [];
+  $file_url = null;
+  $file_name = null;
   if (!empty($_FILES['file'])) {
     $upload = physicalme_handle_contact_upload($_FILES['file']);
     if (is_wp_error($upload)) {
       wp_send_json_error($upload->get_error_message());
     }
-    $attachments = $upload;
+    $file_url = $upload['url'];
+    $file_name = $upload['name'];
   }
-  
-  // Send email
+
+  // Save to database
+  global $wpdb;
+  $table_name = $wpdb->prefix . 'physicalme_contacts';
+
+  $inserted = $wpdb->insert($table_name, [
+    'email' => $email,
+    'subject' => $subject,
+    'message' => $message,
+    'file_url' => $file_url,
+    'file_name' => $file_name,
+    'ip_address' => $_SERVER['REMOTE_ADDR'],
+  ]);
+
+  if (!$inserted) {
+    wp_send_json_error('خطا در ذخیره پیام در دیتابیس');
+  }
+
+  // Send email to admin
   $admin_email = get_option('admin_email');
   $headers = ['Content-Type: text/html; charset=UTF-8', "From: {$email}"];
-  
+
   $body = "
     <h2>پیام تماس جدید</h2>
     <p><strong>ایمیل:</strong> {$email}</p>
@@ -62,44 +208,42 @@ function physicalme_contact_submit() {
     <p><strong>پیام:</strong></p>
     <p>" . nl2br(esc_html($message)) . "</p>
   ";
-  
-  $sent = wp_mail($admin_email, "پیام تماس: {$subject}", $body, $headers, $attachments);
-  
-  // Clean up attachment files
-  foreach ($attachments as $attachment) {
-    @unlink($attachment);
+
+  if ($file_url) {
+    $body .= "<p><strong>فایل پیوست:</strong> <a href='{$file_url}'>{$file_name}</a></p>";
   }
-  
-  if ($sent) {
-    wp_send_json_success('پیام شما با موفقیت ارسال شد');
-  } else {
-    wp_send_json_error('خطا در ارسال پیام');
-  }
+
+  wp_mail($admin_email, "پیام تماس: {$subject}", $body, $headers);
+
+  wp_send_json_success('پیام شما با موفقیت ارسال شد');
 }
 
 function physicalme_handle_contact_upload($file) {
   $max_size = 20 * 1024 * 1024; // 20MB
   $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm', 'application/pdf', 'text/plain'];
-  
+
   if ($file['size'] > $max_size) {
-    return new WP_Error('file_too_large', 'حجم فایل بیش از 20 مگابایت است');
+    return new WP_Error('file_too_large', 'حجم فایل خیلی بزرگ است');
   }
-  
+
   if (!in_array($file['type'], $allowed_types)) {
     return new WP_Error('invalid_type', 'نوع فایل مجاز نیست');
   }
-  
+
   if (!function_exists('wp_handle_upload')) {
     require_once(ABSPATH . 'wp-admin/includes/file.php');
   }
-  
+
   $upload = wp_handle_upload($file, ['test_form' => false]);
-  
+
   if (isset($upload['error'])) {
     return new WP_Error('upload_error', $upload['error']);
   }
-  
-  return [$upload['file']];
+
+  return [
+    'url' => $upload['url'],
+    'name' => $file['name']
+  ];
 }
 
 function physicalme_render_contact_form() {
@@ -111,34 +255,34 @@ function physicalme_render_contact_form() {
         <label for="contact-email">ایمیل *</label>
         <input type="email" id="contact-email" name="email" required>
       </div>
-      
+
       <div class="form-group">
         <label for="contact-subject">موضوع *</label>
         <input type="text" id="contact-subject" name="subject" required>
       </div>
-      
+
       <div class="form-group">
         <label for="contact-message">متن پیام *</label>
         <textarea id="contact-message" name="message" rows="6" required></textarea>
       </div>
-      
+
       <div class="form-group">
-        <label for="contact-file">فایل پیوست (اختیاری - حداکثر 20 MB)</label>
+        <label for="contact-file">فایل پیوست (اختیاری)</label>
         <input type="file" id="contact-file" name="file" accept="image/*,video/*,.pdf,.txt">
       </div>
-      
+
       <div class="form-group">
-        <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+        <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001"></div>
       </div>
-      
+
       <div class="form-group">
         <button type="submit" class="contact-submit-btn">ارسال پیام</button>
       </div>
-      
+
       <div id="contact-message-status" class="contact-message-status"></div>
     </form>
   </div>
-  
+
   <style>
     .physicalme-contact-form-wrapper {
       max-width: 600px;
@@ -167,6 +311,7 @@ function physicalme_render_contact_form() {
       border-radius: 4px;
       font-family: inherit;
       font-size: 14px;
+      box-sizing: border-box;
     }
     .form-group input:focus,
     .form-group textarea:focus {
@@ -183,6 +328,7 @@ function physicalme_render_contact_form() {
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      width: 100%;
     }
     .contact-submit-btn:hover {
       background: #3d4620;
@@ -191,12 +337,14 @@ function physicalme_render_contact_form() {
     .contact-submit-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+      transform: none;
     }
     .contact-message-status {
       margin-top: 15px;
       padding: 12px;
       border-radius: 4px;
       display: none;
+      text-align: right;
     }
     .contact-message-status.success {
       display: block;
@@ -209,6 +357,11 @@ function physicalme_render_contact_form() {
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
+    }
+    .h-captcha {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
     }
   </style>
   <?php
