@@ -3,7 +3,7 @@
  * Contact Form Handler with Database Storage & Google reCAPTCHA v3
  */
 
-// Google reCAPTCHA v3 Keys
+// Google reCAPTCHA v2 Keys
 define('RECAPTCHA_SITE_KEY', '6Lc0XiotAAAAACi7cW-1tt27lFq7sLFM43fLIULe');
 define('RECAPTCHA_SECRET_KEY', '6Lc0XiotAAAAAJrUE5aCNY2ta0oE8DhBpKz7-tqn');
 
@@ -129,7 +129,6 @@ add_shortcode('physicalme_contact_form', function() {
     wp_localize_script('physicalme-contact-form', 'physicalmeContact', [
       'ajaxUrl' => admin_url('admin-ajax.php'),
       'nonce' => wp_create_nonce('physicalme_contact_nonce'),
-      'siteKey' => RECAPTCHA_SITE_KEY,
     ]);
   }
 
@@ -166,7 +165,7 @@ function physicalme_contact_submit() {
 
   // Verify reCAPTCHA token
   if (empty($captcha_token)) {
-    wp_send_json_error('خطا در تحقق reCAPTCHA');
+    wp_send_json_error('لطفا reCAPTCHA را تکمیل کنید');
   }
 
   $verify_response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', [
@@ -182,12 +181,12 @@ function physicalme_contact_submit() {
 
   $body = json_decode(wp_remote_retrieve_body($verify_response));
 
-  // Check score (0.0 = bot, 1.0 = human) - accept if score >= 0.5
-  if (!isset($body->success) || !$body->success || ($body->score < 0.5)) {
-    wp_send_json_error('تحقق reCAPTCHA ناموفق. شما ممکن است ربات باشید');
+  // Check reCAPTCHA response
+  if (!isset($body->success) || !$body->success) {
+    wp_send_json_error('تحقق reCAPTCHA ناموفق. لطفا دوباره سعی کنید');
   }
 
-  $captcha_score = isset($body->score) ? $body->score : 0;
+  $captcha_score = isset($body->score) ? $body->score : 1.0;
 
   // Handle file upload
   $file_url = null;
@@ -295,7 +294,7 @@ function physicalme_render_contact_form() {
       </div>
 
       <div class="form-group">
-        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr(RECAPTCHA_SITE_KEY); ?>" data-action="contact_form"></div>
+        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr(RECAPTCHA_SITE_KEY); ?>"></div>
       </div>
 
       <div class="form-group">
