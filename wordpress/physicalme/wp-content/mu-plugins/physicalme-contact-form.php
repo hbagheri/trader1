@@ -1,7 +1,11 @@
 <?php
 /**
- * Contact Form Handler with Database Storage & CAPTCHA
+ * Contact Form Handler with Database Storage & Google reCAPTCHA v3
  */
+
+// ⚠️ IMPORTANT: Add your Google reCAPTCHA keys here
+define('RECAPTCHA_SITE_KEY', ''); // Get from https://www.google.com/recaptcha/admin
+define('RECAPTCHA_SECRET_KEY', ''); // Get from https://www.google.com/recaptcha/admin
 
 // Create table on plugin activation
 register_activation_hook(__FILE__, 'physicalme_create_contact_table');
@@ -19,6 +23,7 @@ function physicalme_create_contact_table() {
     file_url varchar(500),
     file_name varchar(255),
     ip_address varchar(45),
+    captcha_score float,
     status varchar(20) DEFAULT 'new',
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -70,6 +75,7 @@ function physicalme_render_contact_list() {
           <th>موضوع</th>
           <th>تاریخ</th>
           <th>فایل</th>
+          <th>امتیاز</th>
           <th>عملیات</th>
         </tr>
       </thead>
@@ -87,6 +93,13 @@ function physicalme_render_contact_list() {
                 <a href="<?php echo esc_url($contact->file_url); ?>" target="_blank">
                   <?php echo esc_html($contact->file_name); ?>
                 </a>
+              <?php else: ?>
+                -
+              <?php endif; ?>
+            </td>
+            <td>
+              <?php if ($contact->captcha_score): ?>
+                <strong><?php echo number_format($contact->captcha_score, 2); ?>/1.0</strong>
               <?php else: ?>
                 -
               <?php endif; ?>
@@ -111,11 +124,12 @@ function physicalme_render_contact_list() {
 // Add contact form shortcode
 add_shortcode('physicalme_contact_form', function() {
   if (!is_admin()) {
-    wp_enqueue_script('hcaptcha-script', 'https://js.hcaptcha.com/1/api.js', [], null, true);
+    wp_enqueue_script('recaptcha', 'https://www.google.com/recaptcha/api.js', [], null, true);
     wp_enqueue_script('physicalme-contact-form', get_template_directory_uri() . '/../../../mu-plugins/contact-form.js', [], time(), true);
     wp_localize_script('physicalme-contact-form', 'physicalmeContact', [
       'ajaxUrl' => admin_url('admin-ajax.php'),
       'nonce' => wp_create_nonce('physicalme_contact_nonce'),
+      'siteKey' => RECAPTCHA_SITE_KEY,
     ]);
   }
 
@@ -129,10 +143,15 @@ add_action('wp_ajax_physicalme_contact_submit', 'physicalme_contact_submit');
 function physicalme_contact_submit() {
   check_ajax_referer('physicalme_contact_nonce', 'nonce');
 
+  // Check if keys are set
+  if (empty(RECAPTCHA_SECRET_KEY)) {
+    wp_send_json_error('⚠️ reCAPTCHA لم یتم تشکیل. لطفا با مدیر سایت تماس بگیرید');
+  }
+
   $email = sanitize_email($_POST['email'] ?? '');
   $subject = sanitize_text_field($_POST['subject'] ?? '');
   $message = sanitize_textarea_field($_POST['message'] ?? '');
-  $captcha_token = sanitize_text_field($_POST['h-captcha-response'] ?? '');
+  $captcha_token = sanitize_text_field($_POST['g-recaptcha-response'] ?? '');
 
   // Validation
   if (empty($email) || !is_email($email)) {
@@ -145,28 +164,30 @@ function physicalme_contact_submit() {
     wp_send_json_error('متن پیام باید حداقل 10 حرف باشد');
   }
 
-  // CAPTCHA Verification - REQUIRED!
+  // Verify reCAPTCHA token
   if (empty($captcha_token)) {
-    wp_send_json_error('لطفا hCaptcha را تکمیل کنید');
+    wp_send_json_error('خطا در تحقق reCAPTCHA');
   }
 
-  // Verify hCaptcha token
-  $captcha_secret = '0x0000000000000000000000000000000000000000'; // Replace with real secret
-  $verify_response = wp_remote_post('https://hcaptcha.com/siteverify', [
+  $verify_response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', [
     'body' => [
-      'secret' => $captcha_secret,
+      'secret' => RECAPTCHA_SECRET_KEY,
       'response' => $captcha_token,
     ]
   ]);
 
   if (is_wp_error($verify_response)) {
-    wp_send_json_error('خطا در تحقق hCaptcha');
+    wp_send_json_error('خطا در تحقق reCAPTCHA');
   }
 
   $body = json_decode(wp_remote_retrieve_body($verify_response));
-  if (!isset($body->success) || !$body->success) {
-    wp_send_json_error('تحقق hCaptcha ناموفق بود. لطفا دوباره سعی کنید');
+
+  // Check score (0.0 = bot, 1.0 = human) - accept if score >= 0.5
+  if (!isset($body->success) || !$body->success || ($body->score < 0.5)) {
+    wp_send_json_error('تحقق reCAPTCHA ناموفق. شما ممکن است ربات باشید');
   }
+
+  $captcha_score = isset($body->score) ? $body->score : 0;
 
   // Handle file upload
   $file_url = null;
@@ -191,6 +212,7 @@ function physicalme_contact_submit() {
     'file_url' => $file_url,
     'file_name' => $file_name,
     'ip_address' => $_SERVER['REMOTE_ADDR'],
+    'captcha_score' => $captcha_score,
   ]);
 
   if (!$inserted) {
@@ -207,6 +229,7 @@ function physicalme_contact_submit() {
     <p><strong>موضوع:</strong> {$subject}</p>
     <p><strong>پیام:</strong></p>
     <p>" . nl2br(esc_html($message)) . "</p>
+    <p><small>امتیاز reCAPTCHA: " . number_format($captcha_score, 2) . "/1.0</small></p>
   ";
 
   if ($file_url) {
@@ -272,7 +295,7 @@ function physicalme_render_contact_form() {
       </div>
 
       <div class="form-group">
-        <div class="h-captcha" data-sitekey="10000000-ffff-ffff-ffff-000000000001"></div>
+        <div class="g-recaptcha" data-sitekey="<?php echo esc_attr(RECAPTCHA_SITE_KEY); ?>" data-action="contact_form"></div>
       </div>
 
       <div class="form-group">
@@ -358,10 +381,9 @@ function physicalme_render_contact_form() {
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
-    .h-captcha {
+    .g-recaptcha {
       display: flex;
       justify-content: center;
-      margin: 20px 0;
     }
   </style>
   <?php
