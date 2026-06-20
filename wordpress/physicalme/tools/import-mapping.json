@@ -1,0 +1,140 @@
+{
+  "_help": "نگاشت نام‌های انسانی در front matter به (taxonomy, slug). برای ترم جدید یه ردیف اضافه کن. اگر مقدار front matter شکل slug ASCII داشت (مثل fasl-1)، importer مستقیم استفاده می‌کنه و نیازی به این جدول نیست.",
+
+  "site": "physicalme",
+
+  "names_to_terms": {
+    "دبیرستان":              { "taxonomy": "level",   "slug": "highschool"   },
+    "کنکور":                 { "taxonomy": "level",   "slug": "konkur"       },
+    "دانشگاهی":              { "taxonomy": "level",   "slug": "university"   },
+    "عمومی":                 { "taxonomy": "level",   "slug": "general"      },
+
+    "دهم ریاضی و فیزیک":      { "taxonomy": "chapter", "slug": "dahom-ram"    },
+
+    "فصل ۱ — فیزیک و اندازه‌گیری":     { "taxonomy": "chapter", "slug": "fasl-1" },
+    "فصل ۱: فیزیک و اندازه‌گیری":       { "taxonomy": "chapter", "slug": "fasl-1" },
+    "فصل ۱":                              { "taxonomy": "chapter", "slug": "fasl-1" },
+
+    "فصل ۲ — ویژگی‌های فیزیکی مواد":   { "taxonomy": "chapter", "slug": "fasl-2" },
+    "فصل ۲: ویژگی‌های فیزیکی مواد":     { "taxonomy": "chapter", "slug": "fasl-2" },
+    "فصل ۲":                              { "taxonomy": "chapter", "slug": "fasl-2" },
+
+    "فصل ۳ — کار، انرژی و توان":        { "taxonomy": "chapter", "slug": "fasl-3" },
+    "فصل ۳: کار، انرژی و توان":         { "taxonomy": "chapter", "slug": "fasl-3" },
+    "فصل ۳":                              { "taxonomy": "chapter", "slug": "fasl-3" },
+
+    "فصل ۴ — دما و گرما":               { "taxonomy": "chapter", "slug": "fasl-4" },
+    "فصل ۴: دما و گرما":                 { "taxonomy": "chapter", "slug": "fasl-4" },
+    "فصل ۴":                              { "taxonomy": "chapter", "slug": "fasl-4" },
+
+    "فصل ۵ — ترمودینامیک":              { "taxonomy": "chapter", "slug": "fasl-5" },
+    "فصل ۵: ترمودینامیک":               { "taxonomy": "chapter", "slug": "fasl-5" },
+    "فصل ۵":                              { "taxonomy": "chapter", "slug": "fasl-5" },
+
+    "یازدهم ریاضی و فیزیک":              { "taxonomy": "chapter", "slug": "yazdahom-ram" },
+
+    "فصل ۱ — الکتریسیته‌ی ساکن":        { "taxonomy": "chapter", "slug": "y11-fasl-1" },
+    "فصل ۱: الکتریسیته‌ی ساکن":         { "taxonomy": "chapter", "slug": "y11-fasl-1" },
+    "فصل ۱ — الکتریسیته ساکن":          { "taxonomy": "chapter", "slug": "y11-fasl-1" },
+    "فصل ۱: الکتریسیته ساکن":           { "taxonomy": "chapter", "slug": "y11-fasl-1" },
+
+    "فصل ۲ — جریان الکتریکی و مدارهای جریان مستقیم": { "taxonomy": "chapter", "slug": "y11-fasl-2" },
+    "فصل ۲: جریان الکتریکی و مدارهای جریان مستقیم":  { "taxonomy": "chapter", "slug": "y11-fasl-2" },
+    "فصل ۲ — جریان الکتریکی":                          { "taxonomy": "chapter", "slug": "y11-fasl-2" },
+
+    "فصل ۳ — مغناطیس و القای الکترومغناطیسی":         { "taxonomy": "chapter", "slug": "y11-fasl-3" },
+    "فصل ۳: مغناطیس و القای الکترومغناطیسی":          { "taxonomy": "chapter", "slug": "y11-fasl-3" },
+    "فصل ۳ — مغناطیس":                                  { "taxonomy": "chapter", "slug": "y11-fasl-3" },
+
+    "فصل ۴ — القای الکترومغناطیسی و جریان متناوب":     { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴: القای الکترومغناطیسی و جریان متناوب":      { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴ — القای الکترومغناطیسی":                     { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴ — حرکت نوسانی، امواج، نور و طیف‌نگاری":     { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴: حرکت نوسانی، امواج، نور و طیف‌نگاری":      { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴ — حرکت نوسانی و موج":                        { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+    "فصل ۴ — موج":                                       { "taxonomy": "chapter", "slug": "y11-fasl-4" },
+
+    "دوازدهم ریاضی و فیزیک":             { "taxonomy": "chapter", "slug": "davazdahom-ram" },
+
+    "فصل ۱ — حرکت بر خط راست":            { "taxonomy": "chapter", "slug": "y12-fasl-1" },
+    "فصل ۱: حرکت بر خط راست":             { "taxonomy": "chapter", "slug": "y12-fasl-1" },
+
+    "فصل ۲ — دینامیک و حرکت دایره‌ای":    { "taxonomy": "chapter", "slug": "y12-fasl-2" },
+    "فصل ۲: دینامیک و حرکت دایره‌ای":     { "taxonomy": "chapter", "slug": "y12-fasl-2" },
+    "فصل ۲ — دینامیک":                     { "taxonomy": "chapter", "slug": "y12-fasl-2" },
+
+    "فصل ۳ — نوسان و موج":                 { "taxonomy": "chapter", "slug": "y12-fasl-3" },
+    "فصل ۳: نوسان و موج":                  { "taxonomy": "chapter", "slug": "y12-fasl-3" },
+
+    "فصل ۴ — برهم‌کنش‌های موج":           { "taxonomy": "chapter", "slug": "y12-fasl-4" },
+    "فصل ۴: برهم‌کنش‌های موج":            { "taxonomy": "chapter", "slug": "y12-fasl-4" },
+
+    "فصل ۵ — آشنایی با فیزیک اتمی":        { "taxonomy": "chapter", "slug": "y12-fasl-5" },
+    "فصل ۵: آشنایی با فیزیک اتمی":         { "taxonomy": "chapter", "slug": "y12-fasl-5" },
+    "فصل ۵ — فیزیک اتمی":                  { "taxonomy": "chapter", "slug": "y12-fasl-5" },
+
+    "فصل ۶ — آشنایی با فیزیک هسته‌ای":     { "taxonomy": "chapter", "slug": "y12-fasl-6" },
+    "فصل ۶: آشنایی با فیزیک هسته‌ای":      { "taxonomy": "chapter", "slug": "y12-fasl-6" },
+    "فصل ۶ — فیزیک هسته‌ای":               { "taxonomy": "chapter", "slug": "y12-fasl-6" },
+
+    "دهم تجربی":                            { "taxonomy": "chapter", "slug": "dahom-tajrobi" },
+
+    "فصل ۱ — فیزیک، دانش بنیادی":           { "taxonomy": "chapter", "slug": "y10t-fasl-1" },
+    "فصل ۱: فیزیک، دانش بنیادی":            { "taxonomy": "chapter", "slug": "y10t-fasl-1" },
+    "فصل ۱ — فیزیک دانش بنیادی":            { "taxonomy": "chapter", "slug": "y10t-fasl-1" },
+    "فصل ۱ — دانش بنیادی":                   { "taxonomy": "chapter", "slug": "y10t-fasl-1" },
+
+    "فصل ۲ — ویژگی‌های فیزیکی مواد (تجربی)": { "taxonomy": "chapter", "slug": "y10t-fasl-2" },
+    "فصل ۲: ویژگی‌های فیزیکی مواد (تجربی)":  { "taxonomy": "chapter", "slug": "y10t-fasl-2" },
+
+    "فصل ۳ — کار، انرژی و توان (تجربی)":     { "taxonomy": "chapter", "slug": "y10t-fasl-3" },
+    "فصل ۳: کار، انرژی و توان (تجربی)":      { "taxonomy": "chapter", "slug": "y10t-fasl-3" },
+
+    "فصل ۴ — دما و گرما (تجربی)":            { "taxonomy": "chapter", "slug": "y10t-fasl-4" },
+    "فصل ۴: دما و گرما (تجربی)":             { "taxonomy": "chapter", "slug": "y10t-fasl-4" },
+
+    "یازدهم تجربی":                           { "taxonomy": "chapter", "slug": "yazdahom-tajrobi" },
+
+    "فصل ۱ — الکتریسیتۀ ساکن (تجربی)":        { "taxonomy": "chapter", "slug": "y11t-fasl-1" },
+    "فصل ۱: الکتریسیتۀ ساکن (تجربی)":         { "taxonomy": "chapter", "slug": "y11t-fasl-1" },
+    "فصل ۱ — الکتریسیته ساکن (تجربی)":        { "taxonomy": "chapter", "slug": "y11t-fasl-1" },
+
+    "فصل ۲ — جریان الکتریکی و مدارهای جریان مستقیم (تجربی)": { "taxonomy": "chapter", "slug": "y11t-fasl-2" },
+    "فصل ۲: جریان الکتریکی و مدارهای جریان مستقیم (تجربی)":  { "taxonomy": "chapter", "slug": "y11t-fasl-2" },
+    "فصل ۲ — جریان الکتریکی (تجربی)":         { "taxonomy": "chapter", "slug": "y11t-fasl-2" },
+
+    "فصل ۳ — مغناطیس و القای الکترومغناطیسی (تجربی)": { "taxonomy": "chapter", "slug": "y11t-fasl-3" },
+    "فصل ۳: مغناطیس و القای الکترومغناطیسی (تجربی)":  { "taxonomy": "chapter", "slug": "y11t-fasl-3" },
+    "فصل ۳ — مغناطیس (تجربی)":                { "taxonomy": "chapter", "slug": "y11t-fasl-3" },
+
+    "دوازدهم تجربی":                          { "taxonomy": "chapter", "slug": "davazdahom-tajrobi" },
+
+    "فصل ۱ — حرکت بر خط راست (تجربی)":        { "taxonomy": "chapter", "slug": "y12t-fasl-1" },
+    "فصل ۱: حرکت بر خط راست (تجربی)":         { "taxonomy": "chapter", "slug": "y12t-fasl-1" },
+
+    "فصل ۲ — دینامیک (تجربی)":                { "taxonomy": "chapter", "slug": "y12t-fasl-2" },
+    "فصل ۲: دینامیک (تجربی)":                 { "taxonomy": "chapter", "slug": "y12t-fasl-2" },
+
+    "فصل ۳ — نوسان و امواج (تجربی)":          { "taxonomy": "chapter", "slug": "y12t-fasl-3" },
+    "فصل ۳: نوسان و امواج (تجربی)":           { "taxonomy": "chapter", "slug": "y12t-fasl-3" },
+
+    "فصل ۴ — فیزیک اتمی و هسته‌ای (تجربی)":   { "taxonomy": "chapter", "slug": "y12t-fasl-4" },
+    "فصل ۴: فیزیک اتمی و هسته‌ای (تجربی)":    { "taxonomy": "chapter", "slug": "y12t-fasl-4" },
+    "فصل ۴ — آشنایی با فیزیک اتمی و هسته‌ای (تجربی)": { "taxonomy": "chapter", "slug": "y12t-fasl-4" },
+
+    "مکانیک":                { "taxonomy": "branch",  "slug": "mechanics"        },
+    "الکترومغناطیس":         { "taxonomy": "branch",  "slug": "electromagnetism" },
+    "ترمودینامیک":           { "taxonomy": "branch",  "slug": "thermodynamics"   },
+    "اپتیک":                 { "taxonomy": "branch",  "slug": "optics"           },
+    "فیزیک مدرن":            { "taxonomy": "branch",  "slug": "modern"           },
+    "کوانتوم":               { "taxonomy": "branch",  "slug": "quantum"          },
+    "نسبیت":                 { "taxonomy": "branch",  "slug": "relativity"       },
+    "فیزیک هسته‌ای":         { "taxonomy": "branch",  "slug": "nuclear"          }
+  },
+
+  "front_matter_defaults": {
+    "post_type": "article",
+    "status":    "publish",
+    "level":     "دبیرستان"
+  }
+}

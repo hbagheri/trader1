@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3D4548"/>
+      <stop offset="100%" stop-color="#5B6E32"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- accent corner -->
+  <path d="M0,0 L260,0 L0,260 Z" fill="#D4A847" opacity="0.18"/>
+  <path d="M1200,630 L940,630 L1200,370 Z" fill="#D4A847" opacity="0.12"/>
+  <!-- top label: chapter -->
+  <text x="600" y="120" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="30" font-weight="600" fill="#D4A847" letter-spacing="2" direction="rtl"></text>
+  <!-- divider -->
+  <line x1="500" y1="160" x2="700" y2="160" stroke="#D4A847" stroke-width="2" opacity="0.6"/>
+  <!-- title -->
+  <text x="600" y="320" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="62" font-weight="800" fill="#F8F6F0" direction="rtl">مقاومت الکتریکی و قانون اهم</text><text x="600" y="404" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="62" font-weight="800" fill="#F8F6F0" direction="rtl">— رابطه‌ای که هر مدار رو</text><text x="600" y="488" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="62" font-weight="800" fill="#F8F6F0" direction="rtl">می‌چرخونه…</text>
+  <!-- bottom: lesson label + brand -->
+  <text x="600" y="560" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="24" font-weight="500" fill="#F8F6F0" opacity="0.85" direction="rtl"></text>
+  <text x="600" y="600" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="22" font-weight="700" fill="#D4A847" direction="rtl">منِ فیزیکی · physicsme.ir</text>
+</svg>

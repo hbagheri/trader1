@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7A2D2D"/>
+      <stop offset="100%" stop-color="#C46B2B"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- accent corner -->
+  <path d="M0,0 L260,0 L0,260 Z" fill="#F0CE6B" opacity="0.18"/>
+  <path d="M1200,630 L940,630 L1200,370 Z" fill="#F0CE6B" opacity="0.12"/>
+  <!-- top label: chapter -->
+  <text x="600" y="120" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="30" font-weight="600" fill="#F0CE6B" letter-spacing="2" direction="rtl">فصل ۳: کار، انرژی و توان</text>
+  <!-- divider -->
+  <line x1="500" y1="160" x2="700" y2="160" stroke="#F0CE6B" stroke-width="2" opacity="0.6"/>
+  <!-- title -->
+  <text x="600" y="320" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="62" font-weight="800" fill="#F8F6F0" direction="rtl">کارِ نیروی ثابت: در فیزیک،</text><text x="600" y="404" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif" font-size="62" font-weight="800" fill="#F8F6F0" direction="rtl">«کار» یعنی چی؟ 💪</text>
+  <!-- bottom: lesson label + brand -->
+  <text x="600" y="560" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="24" font-weight="500" fill="#F8F6F0" opacity="0.85" direction="rtl">بند 2</text>
+  <text x="600" y="600" text-anchor="middle" font-family="Vazirmatn, Tahoma, sans-serif"
+        font-size="22" font-weight="700" fill="#F0CE6B" direction="rtl">منِ فیزیکی · physicsme.ir</text>
+</svg>

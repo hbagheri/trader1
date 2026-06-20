@@ -1,0 +1,263 @@
+<?php
+/**
+ * Plugin Name: PhysicalMe — Push Notifications (FCM)
+ * Description: Stores FCM device tokens, exposes /pm/v1/push/{subscribe,unsubscribe},
+ *              fires a notification to all subscribers when an article is first published.
+ * Version: 0.1.0
+ *
+ * Required wp-config.php constants (see docs/push-setup.md):
+ *   PM_FCM_PROJECT_ID            — Firebase project id (e.g. "physicalme-12345")
+ *   PM_FCM_SERVICE_ACCOUNT_JSON  — absolute path to the service account JSON file
+ *
+ * If either constant is missing the send path is a no-op (subscribe/unsubscribe
+ * still work, so the client can be developed against a credential-less backend).
+ */
+
+if (!defined('ABSPATH')) exit;
+
+define('PM_PUSH_DB_VERSION', '1');
+define('PM_PUSH_TABLE',      'pm_push_subs');
+
+/* ─────────── Schema ─────────── */
+function pm_push_install_table(): void {
+    global $wpdb;
+    $installed = get_option('pm_push_db_version');
+    if ($installed === PM_PUSH_DB_VERSION) return;
+
+    $table   = $wpdb->prefix . PM_PUSH_TABLE;
+    $charset = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE {$table} (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        token VARCHAR(512) NOT NULL,
+        platform VARCHAR(16) NOT NULL DEFAULT 'android',
+        lang VARCHAR(8) NOT NULL DEFAULT 'fa',
+        created_at DATETIME NOT NULL,
+        last_seen DATETIME NOT NULL,
+        PRIMARY KEY (id),
+        UNIQUE KEY token_uk (token(191))
+    ) {$charset};";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+    update_option('pm_push_db_version', PM_PUSH_DB_VERSION, false);
+}
+add_action('plugins_loaded', 'pm_push_install_table');
+
+/* ─────────── REST routes ─────────── */
+add_action('rest_api_init', function () {
+    register_rest_route('pm/v1', '/push/subscribe', [
+        'methods'             => 'POST',
+        'callback'            => 'pm_push_subscribe',
+        'permission_callback' => '__return_true',
+    ]);
+    register_rest_route('pm/v1', '/push/unsubscribe', [
+        'methods'             => 'POST',
+        'callback'            => 'pm_push_unsubscribe',
+        'permission_callback' => '__return_true',
+    ]);
+    register_rest_route('pm/v1', '/push/test', [
+        'methods'             => 'POST',
+        'callback'            => 'pm_push_admin_test',
+        'permission_callback' => function () { return current_user_can('manage_options'); },
+    ]);
+});
+
+function pm_push_subscribe(WP_REST_Request $req): WP_REST_Response {
+    $token    = trim((string)$req->get_param('token'));
+    $platform = (string)($req->get_param('platform') ?: 'android');
+    $lang     = (string)($req->get_param('lang') ?: 'fa');
+
+    if ($token === '' || strlen($token) > 512) {
+        return new WP_REST_Response(['error' => ['code' => 'bad_token', 'message' => 'Missing or oversized token']], 400);
+    }
+    if (!in_array($platform, ['android', 'ios', 'web'], true)) {
+        $platform = 'android';
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . PM_PUSH_TABLE;
+    $now   = current_time('mysql', true);
+    // INSERT ... ON DUPLICATE KEY UPDATE (upsert on token).
+    $wpdb->query($wpdb->prepare(
+        "INSERT INTO {$table} (token, platform, lang, created_at, last_seen)
+         VALUES (%s, %s, %s, %s, %s)
+         ON DUPLICATE KEY UPDATE platform = VALUES(platform), lang = VALUES(lang), last_seen = VALUES(last_seen)",
+        $token, $platform, $lang, $now, $now
+    ));
+
+    return new WP_REST_Response(['ok' => true], 200);
+}
+
+function pm_push_unsubscribe(WP_REST_Request $req): WP_REST_Response {
+    $token = trim((string)$req->get_param('token'));
+    if ($token === '') {
+        return new WP_REST_Response(['error' => ['code' => 'bad_token', 'message' => 'Missing token']], 400);
+    }
+    global $wpdb;
+    $table = $wpdb->prefix . PM_PUSH_TABLE;
+    $wpdb->query($wpdb->prepare("DELETE FROM {$table} WHERE token = %s", $token));
+    return new WP_REST_Response(['ok' => true], 200);
+}
+
+function pm_push_admin_test(WP_REST_Request $req): WP_REST_Response {
+    $title = (string)($req->get_param('title') ?: 'تستِ منِ فیزیکی');
+    $body  = (string)($req->get_param('body')  ?: 'این یک پیامِ تستی است.');
+    $slug  = (string)($req->get_param('slug')  ?: '');
+    [$sent, $removed] = pm_push_broadcast($title, $body, ['type' => 'test', 'slug' => $slug]);
+    return new WP_REST_Response(['ok' => true, 'sent' => $sent, 'removed' => $removed], 200);
+}
+
+/* ─────────── Fire on first publish ─────────── */
+add_action('transition_post_status', function ($new, $old, $post) {
+    if (!($post instanceof WP_Post)) return;
+    if ($post->post_type !== 'article') return;
+    if ($new !== 'publish' || $old === 'publish') return;
+    // Idempotency: don't send twice for the same post even if status oscillates later.
+    if (get_post_meta($post->ID, '_pm_push_sent', true)) return;
+    wp_schedule_single_event(time() + 30, 'pm_push_send_article', [(int)$post->ID]);
+}, 10, 3);
+
+add_action('pm_push_send_article', function (int $post_id) {
+    $post = get_post($post_id);
+    if (!$post || $post->post_status !== 'publish' || $post->post_type !== 'article') return;
+    if (get_post_meta($post_id, '_pm_push_sent', true)) return;
+
+    $title = wp_strip_all_tags(get_the_title($post));
+    $body  = wp_strip_all_tags(get_the_excerpt($post));
+    if ($body === '') {
+        $body = mb_substr(wp_strip_all_tags($post->post_content), 0, 140);
+    }
+    $data = [
+        'type' => 'article',
+        'slug' => $post->post_name,
+    ];
+
+    [$sent, $removed] = pm_push_broadcast($title, $body, $data);
+    update_post_meta($post_id, '_pm_push_sent', time());
+    error_log("[pm_push] article={$post->post_name} sent={$sent} removed={$removed}");
+});
+
+/* ─────────── FCM HTTP v1 sender ─────────── */
+/**
+ * Returns [sent_count, removed_count]. No-op (returns [0,0]) if credentials are
+ * not configured — useful for dev / before Firebase is set up.
+ */
+function pm_push_broadcast(string $title, string $body, array $data = []): array {
+    $project_id = defined('PM_FCM_PROJECT_ID') ? PM_FCM_PROJECT_ID : '';
+    $sa_path    = defined('PM_FCM_SERVICE_ACCOUNT_JSON') ? PM_FCM_SERVICE_ACCOUNT_JSON : '';
+    if ($project_id === '' || $sa_path === '' || !is_readable($sa_path)) {
+        error_log('[pm_push] credentials missing — skipping send');
+        return [0, 0];
+    }
+    $access_token = pm_push_access_token($sa_path);
+    if (!$access_token) {
+        error_log('[pm_push] could not obtain access token');
+        return [0, 0];
+    }
+
+    global $wpdb;
+    $table = $wpdb->prefix . PM_PUSH_TABLE;
+    $rows  = $wpdb->get_results("SELECT id, token FROM {$table}", ARRAY_A);
+    if (!$rows) return [0, 0];
+
+    $endpoint = "https://fcm.googleapis.com/v1/projects/{$project_id}/messages:send";
+    // FCM data values must be strings; stringify everything.
+    $data_strings = [];
+    foreach ($data as $k => $v) $data_strings[(string)$k] = (string)$v;
+
+    $sent = 0; $removed = 0;
+    foreach ($rows as $row) {
+        $payload = [
+            'message' => [
+                'token'        => $row['token'],
+                'notification' => ['title' => $title, 'body' => $body],
+                'data'         => $data_strings,
+                'android'      => ['priority' => 'HIGH'],
+            ],
+        ];
+        $res = wp_remote_post($endpoint, [
+            'timeout' => 10,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $access_token,
+                'Content-Type'  => 'application/json; charset=utf-8',
+            ],
+            'body'    => wp_json_encode($payload),
+        ]);
+        if (is_wp_error($res)) {
+            error_log('[pm_push] send error: ' . $res->get_error_message());
+            continue;
+        }
+        $code = (int)wp_remote_retrieve_response_code($res);
+        if ($code >= 200 && $code < 300) {
+            $sent++;
+            continue;
+        }
+        // 404 UNREGISTERED or 400 INVALID_ARGUMENT on the token → drop it.
+        $body_str = (string)wp_remote_retrieve_body($res);
+        if ($code === 404 || (
+            $code === 400 && (strpos($body_str, 'INVALID_ARGUMENT') !== false || strpos($body_str, 'registration token') !== false)
+        )) {
+            $wpdb->delete($table, ['id' => (int)$row['id']], ['%d']);
+            $removed++;
+            continue;
+        }
+        // Other errors: log but keep token (could be transient).
+        error_log("[pm_push] FCM {$code}: " . substr($body_str, 0, 240));
+    }
+    return [$sent, $removed];
+}
+
+/**
+ * Exchange a service-account JWT for an OAuth2 access token. Result is cached
+ * in a transient until shortly before it expires.
+ */
+function pm_push_access_token(string $sa_path): ?string {
+    $cached = get_transient('pm_push_fcm_access_token');
+    if ($cached) return $cached;
+
+    $sa = json_decode((string)file_get_contents($sa_path), true);
+    if (!is_array($sa) || empty($sa['client_email']) || empty($sa['private_key'])) {
+        error_log('[pm_push] invalid service account JSON at ' . $sa_path);
+        return null;
+    }
+
+    $now = time();
+    $header = ['alg' => 'RS256', 'typ' => 'JWT'];
+    $claims = [
+        'iss'   => $sa['client_email'],
+        'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+        'aud'   => 'https://oauth2.googleapis.com/token',
+        'iat'   => $now,
+        'exp'   => $now + 3600,
+    ];
+    $b64url = function ($s) { return rtrim(strtr(base64_encode($s), '+/', '-_'), '='); };
+    $signing_input = $b64url(wp_json_encode($header)) . '.' . $b64url(wp_json_encode($claims));
+
+    $signature = '';
+    $ok = openssl_sign($signing_input, $signature, $sa['private_key'], OPENSSL_ALGO_SHA256);
+    if (!$ok) {
+        error_log('[pm_push] openssl_sign failed');
+        return null;
+    }
+    $jwt = $signing_input . '.' . $b64url($signature);
+
+    $res = wp_remote_post('https://oauth2.googleapis.com/token', [
+        'timeout' => 10,
+        'body'    => [
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion'  => $jwt,
+        ],
+    ]);
+    if (is_wp_error($res)) {
+        error_log('[pm_push] token exchange error: ' . $res->get_error_message());
+        return null;
+    }
+    $body = json_decode((string)wp_remote_retrieve_body($res), true);
+    if (!is_array($body) || empty($body['access_token'])) {
+        error_log('[pm_push] token exchange response missing access_token: ' . wp_remote_retrieve_body($res));
+        return null;
+    }
+    $ttl = max(60, (int)($body['expires_in'] ?? 3600) - 60);
+    set_transient('pm_push_fcm_access_token', $body['access_token'], $ttl);
+    return (string)$body['access_token'];
+}
